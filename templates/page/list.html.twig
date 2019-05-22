@@ -1,3 +1,15 @@
 {% extends 'layout/layout-two-cols-4-8.html.twig' %}
 
-{% block regionRight %} {{ dump(pages) }} {% endblock %}
+{% block regionRight %}
+    <div class="block block--page-list">
+        <div class="block-content">
+            <div class="list list--page-list">
+                {% for page in pages %}
+                    <div class="list-item">
+                        {{ include('@page/view/teaser.html.twig', {'item' : page}) }}
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+{% endblock %}
