@@ -12,7 +12,7 @@ class PageController extends AbstractController
     /**
      * @Route("/page", name="page")
      */
-    public function index()
+    public function listAction()
     {
         $repoPages = $this->getDoctrine()->getRepository(Page::class);
         $pages = $repoPages->findAll();
