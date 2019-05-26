@@ -7,7 +7,7 @@
             <div class="field field-body">{{ page.body }}</div>
             <div class="field field-category">{{ page.category.name }}</div>
             <div class="field field-created">{{ page.created|date('d-m-Y') }}</div>
-{#            <div class="field field-comments">{{ include('@Comment/lists.html.twig', {'items' : page.comments }) }}</div>#}
+            <div class="field field-comments">{{ include('@comment/list.html.twig', {'items' : page.comments }) }}</div>
         </div>
     </div>
 {% endblock %}
