@@ -48,6 +48,14 @@ class Term
     }
 
     /**
+     * @return mixed
+     */
+    public function __toString()
+    {
+        return $this->name;
+    }
+
+    /**
      * @return int|null
      */
     public function getId(): ?int
