@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Page;
+use App\Form\PageDeleteFormType;
 use App\Form\PageFormType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -38,7 +39,11 @@ class PageController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            dump($page->getCategory());
+            $em = $this->getDoctrine()->getManager();
+            $em->persist($page);
+            $em->flush();
+
+            return $this->redirectToRoute('page');
         }
 
         return $this->render('@page/form/add.html.twig', [
@@ -47,7 +52,7 @@ class PageController extends AbstractController
     }
 
     /**
-     * @Route("/page/{id}", name="page_view")
+     * @Route("/page/{id}", name="page_view", requirements={"id"="\d+"})
      *
      * @param int $id
      * @return Response
@@ -64,4 +69,69 @@ class PageController extends AbstractController
             'page' => $page,
         ]);
     }
+
+    /**
+     * @Route("/page/{id}/edit", name="page_edit", requirements={"id"="\d+"})
+     *
+     * @param Request $request
+     * @param int $id
+     * @return Response
+     */
+    public function editAction(Request $request, int $id)
+    {
+        $repoPages = $this->getDoctrine()->getRepository(Page::class);
+        $page = $repoPages->find($id);
+
+        if(!$page) {
+            throw $this->createNotFoundException('Page is not found!');
+        }
+
+        $form = $this->createForm(PageFormType::class, $page);
+        $form->handleRequest($request);
+
+        if($form->isSubmitted() && $form->isValid()) {
+            $em = $this->getDoctrine()->getManager();
+            $em->persist($page);
+            $em->flush();
+
+            return $this->redirectToRoute('page');
+        }
+
+        return $this->render('@page/form/edit.html.twig', [
+            'form' => $form->createView()
+        ]);
+    }
+
+    /**
+     * @Route("page/{id}/delete", name="page_delete")
+     *
+     * @param Request $request
+     * @param int $id
+     * @return Response
+     */
+    public function removeAction(Request $request, int $id)
+    {
+        $repoPages = $this->getDoctrine()->getRepository(Page::class);
+        $page = $repoPages->find($id);
+
+        if(!$page) {
+            throw $this->createNotFoundException('Page is not found!');
+        }
+
+        $form = $this->createForm(PageDeleteFormType::class, $page);
+        $form->handleRequest($request);
+
+        if($form->isSubmitted()) {
+            $em = $this->getDoctrine()->getManager();
+            $em->remove($page);
+            $em->flush();
+
+            return $this->redirectToRoute('page');
+        }
+
+        return $this->render('@page/form/delete.html.twig', [
+            'form' => $form->createView()
+        ]);
+    }
+
 }
