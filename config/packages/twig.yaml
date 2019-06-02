@@ -6,3 +6,4 @@ twig:
     paths:
         '%kernel.project_dir%/templates/page' : page
         '%kernel.project_dir%/templates/comment' : comment
+        '%kernel.project_dir%/templates/term' : term
