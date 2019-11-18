@@ -2,9 +2,11 @@
 
 namespace App\Controller;
 
+use App\Entity\Comment;
 use App\Entity\Page;
 use App\Form\PageDeleteFormType;
 use App\Form\PageFormType;
+use App\Form\CommentFormType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
@@ -55,9 +57,10 @@ class PageController extends AbstractController
      * @Route("/page/{id}", name="page_view", requirements={"id"="\d+"})
      *
      * @param int $id
+     * @param Request $request
      * @return Response
      */
-    public function viewAction(int $id)
+    public function viewAction(int $id, Request $request)
     {
         $repoPages = $this->getDoctrine()->getRepository(Page::class);
         $page = $repoPages->find($id);
@@ -65,8 +68,27 @@ class PageController extends AbstractController
         if (!$page) {
             throw $this->createNotFoundException('Page is not found!');
         }
+
+        $commentForm = $this->createForm(CommentFormType::class);
+        $commentForm->handleRequest($request);
+
+        if($commentForm->isSubmitted()) {
+            /** @var Comment $comment */
+            $comment = $commentForm->getData();
+            $comment->addPage($page);
+
+            $em = $this->getDoctrine()->getManager();
+            $em->persist($comment);
+            $em->flush();
+
+            return $this->redirectToRoute('page_view', [
+                'id' => $page->getId()
+            ]);
+        }
+
         return $this->render('@page/view.html.twig', [
             'page' => $page,
+            'comment_form' => $commentForm->createView(),
         ]);
     }
 

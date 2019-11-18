@@ -40,6 +40,7 @@ class Page
 
     /**
      * @ORM\ManyToMany(targetEntity="App\Entity\Comment", mappedBy="pages", cascade={"persist", "remove"})
+     * @ORM\OrderBy({"id" = "DESC"})
      */
     private $comments;
 
